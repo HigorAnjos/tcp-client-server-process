@@ -1,0 +1,2 @@
+Listar portas 
+netstat
