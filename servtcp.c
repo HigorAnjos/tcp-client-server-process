@@ -17,55 +17,68 @@ int main(void)
 	char buf[1024]; /* buffer de dados */
 
 	s = socket(AF_INET, SOCK_STREAM, 0);
-	if( s == -1 ) {
+	
+	if( s == -1 )
+	{
 		fprintf(stderr, "ERRO em socket()\n");
 		exit(2);
 	}
 	else
-		fprintf(stderr,"Socket criado com sucesso\n");
+	{
+		fprintf(stderr, "Socket criado com sucesso\n");
+	}
 
-	server.sin_family = AF_INET; 
+	server.sin_family = AF_INET;
 	server.sin_port = 0; /* usa a primeira porta disponivel */
 	server.sin_addr.s_addr = INADDR_ANY;
 
-	if( bind(s, (struct sockaddr *)&server, sizeof( server )) < 0 ) { 
+	if(bind(s, (struct sockaddr *)&server, sizeof( server )) < 0 )
+	{ 
 		fprintf(stderr,"Erro em bind()\n");
 		exit(3);
 	}
 
 	/* descobre a porta associada*/
 	namelen = sizeof( server );
-	if( getsockname( s, (struct sockaddr *) &server, &namelen) < 0 ) {
+	if(getsockname( s, (struct sockaddr *) &server, &namelen) < 0 )
+	{
 		fprintf(stderr, "Erro em getsockname()\n");
 		exit(4);
 	}
+
 	fprintf(stderr,"Numero de porta : %d\n", ntohs( server.sin_port));
 
-	if( listen(s, 1) != 0 ) { 
-		fprintf(stderr, "Erro em listen()\n");
-		exit(5);
-	}
+	while (1)
+	{
+		if( listen(s, 1) != 0 )
+		{ 
+			fprintf(stderr, "Erro em listen()\n");
+			exit(5);
+		}
 
-	namelen = sizeof(client); 
-	if( (ns = accept(s, (struct sockaddr *)&client, &namelen)) == -1) {
-		fprintf(stderr, "Erro em accept()\n");
-		exit(6);
-	}
-        
-        bzero(buf,1024);
- 
-	if( recv(ns, buf, sizeof(buf), 0) == -1 ) { 
-		fprintf(stderr, "Erro em recv()\n");
-		exit(7); }
-        printf("\n%s", buf);
-
+		namelen = sizeof(client); 
+		if( (ns = accept(s, (struct sockaddr *)&client, &namelen)) == -1)
+		{
+			fprintf(stderr, "Erro em accept()\n");
+			exit(6);
+		}
+					
+		bzero(buf,1024);
 	
+		if( recv(ns, buf, sizeof(buf), 0) == -1 )
+		{ 
+			fprintf(stderr, "Erro em recv()\n");
+			exit(7);
+		}
+		
+		printf("\n%s", buf);
 
-	if( send( ns, buf, sizeof(buf), 0) < 0) {
-		fprintf(stderr, " Erro em send()\n");
-		exit(8);
+		if( send( ns, buf, sizeof(buf), 0) < 0)
+		{
+			fprintf(stderr, " Erro em send()\n");
+			exit(8);
+		}
 	}
-         
        
 
 	close(ns); /* close socket cliente */
@@ -73,6 +86,6 @@ int main(void)
 
 	printf("Servidor finalizado\n");
 	exit(0);
-return (0);
+	return (0);
 }
 
