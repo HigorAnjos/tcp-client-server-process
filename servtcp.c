@@ -58,7 +58,6 @@ int main(void)
 
 	s = openAtcpNetworkConnection();
 
-
 	server.sin_family = AF_INET;
 	server.sin_port = 0; /* usa a primeira porta disponivel */
 	server.sin_addr.s_addr = INADDR_ANY;
