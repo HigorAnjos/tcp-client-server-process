@@ -70,9 +70,10 @@ int openAtcpNetworkConnection ()
 
 void initiateAconnectionOnAsocket (char ** argv, int s)
 {
+	// inicia uma conexao com o socket do servidor
 	// argv[1] IP host
 	// argv[2] PORT host
-	
+
 	unsigned short port ; /* numero porta servidor */
 	struct sockaddr_in server; /* end servidor */
 
