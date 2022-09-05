@@ -7,12 +7,12 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-void readMsgAndCopyToBuffer (char * buffer);
+void isValidArguments (int argc, char ** argv);
 int openAtcpNetworkConnection ();
 void initiateAconnectionOnAsocket (char ** argv, int s);
+void readMsgAndCopyToBuffer (char * buffer);
 void sendMsg (char * msgBuffer, int s);
 void recvMsg (char * msgBuffer, int s);
-void printNumPort (int argc, char ** argv);
 void closeClient (int s);
 
 int main( argc, argv)
@@ -22,7 +22,7 @@ char **argv;
 	int s; 
 	char buf[1024]; 
 
-	printNumPort(argc, argv);
+	isValidArguments(argc, argv);
 
 	s = openAtcpNetworkConnection();
 
@@ -38,14 +38,13 @@ char **argv;
 	return (0);
 }
 
-void readMsgAndCopyToBuffer (char * buffer)
+void isValidArguments (int argc, char ** argv)
 {
-	char readMsg[1024];
-
-	printf("Mensagem para o servidor: ");	
-	scanf("%s", readMsg);
-
-	strcpy(buffer, readMsg); /* messagem */
+	if( argc != 3 )
+	{ 
+		fprintf( stderr, "Uso: %s hostname porta\n", argv[0] );
+		exit(1);
+	}
 }
 
 int openAtcpNetworkConnection ()
@@ -84,6 +83,16 @@ void initiateAconnectionOnAsocket (char ** argv, int s)
 	}
 }
 
+void readMsgAndCopyToBuffer (char * buffer)
+{
+	char readMsg[1024];
+
+	printf("Mensagem para o servidor: ");	
+	scanf("%s", readMsg);
+
+	strcpy(buffer, readMsg); /* messagem */
+}
+
 void sendMsg (char * msgBuffer, int s)
 {
 	if( send(s, msgBuffer, sizeof(msgBuffer), 0) < 0 )
@@ -106,15 +115,6 @@ void recvMsg (char * msgBuffer, int s)
 	}
 
 	printf("Menssagem recebida: %s\n", msgBuffer);
-}
-
-void printNumPort (int argc, char ** argv)
-{
-	if( argc != 3 )
-	{ 
-		fprintf( stderr, "Uso: %s hostname porta\n", argv[0] );
-		exit(1);
-	}
 }
 
 void closeClient (int s)
