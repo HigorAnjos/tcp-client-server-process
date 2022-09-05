@@ -7,38 +7,71 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+void readMsgAndCopyToBuffer (char * buffer);
+int openAtcpNetworkConnection ();
+void initiateAconnectionOnAsocket (char ** argv, int s);
+void sendMsg (char * msgBuffer, int s);
+void recvMsg (char * msgBuffer, int s);
+void printNumPort (int argc, char ** argv);
+void closeClient (int s);
+
 int main( argc, argv)
 int argc;
 char **argv;
 {
-	int sockint, s; 
-	unsigned short port ; /* numero porta servidor */
-	struct sockaddr_in server; /* end servidor */
+	int s; 
 	char buf[1024]; 
-	
-	if( argc != 3 )
-	{ 
-		fprintf( stderr, "Uso: %s hostname porta\n", argv[0] );
-		exit(1);
-	}
 
-	port = (unsigned short) atoi(argv[2]); /* porta */
+	printNumPort(argc, argv);
 
-	strcpy(buf, "String enviada para o servidor"); /* messagem */
+	s = openAtcpNetworkConnection();
 
+	initiateAconnectionOnAsocket(argv, s);
+
+	readMsgAndCopyToBuffer(buf);
+
+	sendMsg(buf, s);
+
+	recvMsg(buf, s);
+
+	closeClient(s);
+	return (0);
+}
+
+void readMsgAndCopyToBuffer (char * buffer)
+{
+	char readMsg[1024];
+
+	printf("Mensagem para o servidor: ");	
+	scanf("%s", readMsg);
+
+	strcpy(buffer, readMsg); /* messagem */
+}
+
+int openAtcpNetworkConnection ()
+{
 	fprintf(stderr, "Criando socket TCP\n");
 
-	s = socket(AF_INET, SOCK_STREAM, 0);
+	int connenction = socket(AF_INET, SOCK_STREAM, 0);
 
-	if( s == -1 ) 
+	if( connenction == -1 ) // { 0 succeeds, -1 an Error }
 	{
 		fprintf(stderr, "Erro Socket ()\n");
 		exit(2);
 	}
-	else 
-	{
-		fprintf(stderr, "Socket criado com successo\n");
-	}
+
+	fprintf(stderr, "Socket criado com successo\n");
+	
+	return connenction; // returns a channel identifier
+}
+
+void initiateAconnectionOnAsocket (char ** argv, int s)
+{
+	unsigned short port ; /* numero porta servidor */
+	struct sockaddr_in server; /* end servidor */
+
+	// atoi() converte string pra int
+	port = (unsigned short) atoi(argv[2]); /* porta */
 
 	server.sin_family = AF_INET; 
 	server.sin_port = htons(port);
@@ -49,27 +82,44 @@ char **argv;
 		fprintf(stderr, "Erro connect ()\n");
 		exit(3);
 	}
+}
 
-	printf("Menssagem enviada: %s\n", buf);
-
-	if( send(s, buf, sizeof(buf), 0) < 0 )
+void sendMsg (char * msgBuffer, int s)
+{
+	if( send(s, msgBuffer, sizeof(msgBuffer), 0) < 0 )
 	{
 		fprintf(stderr, "Erro send ()\n");
 		exit(4);
 	}
 
+	printf("Menssagem enviada: %s\n", msgBuffer);
+}
+
+void recvMsg (char * msgBuffer, int s)
+{
 	/* recebe msg d echo do servidor */
-	if(recv(s, buf, sizeof(buf), 0) < 0 )
+
+	if(recv(s, msgBuffer, sizeof(msgBuffer), 0) < 0 )
 	{
 		fprintf(stderr, "Erro receive ()\n");
 		exit(5);
 	}
-	
-	printf("Menssagem recebida: %s\n", buf);
 
+	printf("Menssagem recebida: %s\n", msgBuffer);
+}
+
+void printNumPort (int argc, char ** argv)
+{
+	if( argc != 3 )
+	{ 
+		fprintf( stderr, "Uso: %s hostname porta\n", argv[0] );
+		exit(1);
+	}
+}
+
+void closeClient (int s)
+{
 	close(s);
 	printf("close () cliente ok\n"); 
 	exit(0);
-
-return (0);
 }

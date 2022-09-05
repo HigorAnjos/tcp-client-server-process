@@ -48,7 +48,7 @@ int main(void)
 
 	fprintf(stderr,"Numero de porta : %d\n", ntohs( server.sin_port));
 
-	while (1)
+	while (1 && buf[0] != 'E')
 	{
 		if( listen(s, 1) != 0 )
 		{ 
@@ -63,7 +63,7 @@ int main(void)
 			exit(6);
 		}
 					
-		bzero(buf,1024);
+		bzero(buf, 1024);
 	
 		if( recv(ns, buf, sizeof(buf), 0) == -1 )
 		{ 
