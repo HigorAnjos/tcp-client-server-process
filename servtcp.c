@@ -34,6 +34,16 @@ void recvMsg (char * msgBuffer, int ns)
 		exit(7);
 	}
 
+	printf("\nMsg Recebida%s \n", msgBuffer);
+}
+
+void sendMsg(char * msgBuffer, int ns)
+{
+	if( send( ns, msgBuffer, sizeof(msgBuffer), 0) < 0)
+	{
+		fprintf(stderr, " Erro em send()\n");
+		exit(8);
+	}
 }
 
 int main(void)
@@ -86,14 +96,7 @@ int main(void)
 		}
 
 		recvMsg(buf, ns);
-		
-		printf("\n%s", buf);
-
-		if( send( ns, buf, sizeof(buf), 0) < 0)
-		{
-			fprintf(stderr, " Erro em send()\n");
-			exit(8);
-		}
+		sendMsg(buf, ns); // echo
 	}
        
 
