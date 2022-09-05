@@ -24,6 +24,18 @@ int openAtcpNetworkConnection()
 	return connection;
 }
 
+void recvMsg (char * msgBuffer, int ns) 
+{
+	bzero(msgBuffer, 1024);
+
+	if( recv(ns, msgBuffer, sizeof(msgBuffer), 0) == -1 )
+	{ 
+		fprintf(stderr, "Erro em recv()\n");
+		exit(7);
+	}
+
+}
+
 int main(void)
 {
 	// mudar s -> sockint
@@ -66,19 +78,14 @@ int main(void)
 	while (1 && (buf[0] != 'E'))
 	{
 		namelen = sizeof(client); 
-		if( (ns = accept(s, (struct sockaddr *)&client, &namelen)) == -1)
+		ns = accept(s, (struct sockaddr *)&client, &namelen);
+		if( ns == -1)
 		{
 			fprintf(stderr, "Erro em accept()\n");
 			exit(6);
 		}
 
-		bzero(buf, 1024);
-	
-		if( recv(ns, buf, sizeof(buf), 0) == -1 )
-		{ 
-			fprintf(stderr, "Erro em recv()\n");
-			exit(7);
-		}
+		recvMsg(buf, ns);
 		
 		printf("\n%s", buf);
 
