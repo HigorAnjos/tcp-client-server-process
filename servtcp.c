@@ -7,6 +7,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+int MAX_CONNECTIONS = 1;
+
+
 int openAtcpNetworkConnection()
 {
 	fprintf(stderr, "Criando socket TCP\n");
@@ -28,6 +31,7 @@ void recvMsg (char * msgBuffer, int ns)
 {
 	bzero(msgBuffer, 1024);
 
+	// recv (clientSocket, enderecoBuffer, tamLimit, flag ) retuns (tamanho dos dados recebidos)
 	if( recv(ns, msgBuffer, sizeof(msgBuffer), 0) == -1 )
 	{ 
 		fprintf(stderr, "Erro em recv()\n");
@@ -78,7 +82,7 @@ int main(void)
 
 	fprintf(stderr,"Numero de porta : %d\n", ntohs( server.sin_port));
 
-	if(listen(s, 1) != 0)
+	if(listen(s, MAX_CONNECTIONS) != 0)
 	{ 
 		fprintf(stderr, "Erro em listen()\n");
 		exit(5);
