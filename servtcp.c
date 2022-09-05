@@ -7,26 +7,35 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+int openAtcpNetworkConnection()
+{
+	fprintf(stderr, "Criando socket TCP\n");
+
+	int connection = socket(AF_INET, SOCK_STREAM, 0);
+	
+	if( connection == -1 )
+	{
+		fprintf(stderr, "ERRO em socket()\n");
+		exit(2);
+	}
+
+	fprintf(stderr, "Socket criado com sucesso\n");
+
+	return connection;
+}
+
 int main(void)
 {
-	int sockint, s; /* descritor do socket */
+	// mudar s -> sockint
+	int s; /* descritor do socket */
 	int namelen; /* comprimento do nome do cliente */
 	int ns; /* socket cliente */
 	struct sockaddr_in client; /* informacao do end do cliente*/
 	struct sockaddr_in server; /* informacao do end do servidor*/
 	char buf[1024]; /* buffer de dados */
 
-	s = socket(AF_INET, SOCK_STREAM, 0);
-	
-	if( s == -1 )
-	{
-		fprintf(stderr, "ERRO em socket()\n");
-		exit(2);
-	}
-	else
-	{
-		fprintf(stderr, "Socket criado com sucesso\n");
-	}
+	s = openAtcpNetworkConnection();
+
 
 	server.sin_family = AF_INET;
 	server.sin_port = 0; /* usa a primeira porta disponivel */
@@ -48,21 +57,21 @@ int main(void)
 
 	fprintf(stderr,"Numero de porta : %d\n", ntohs( server.sin_port));
 
-	while (1 && buf[0] != 'E')
-	{
-		if( listen(s, 1) != 0 )
-		{ 
-			fprintf(stderr, "Erro em listen()\n");
-			exit(5);
-		}
+	if(listen(s, 1) != 0)
+	{ 
+		fprintf(stderr, "Erro em listen()\n");
+		exit(5);
+	}
 
+	while (1 && (buf[0] != 'E'))
+	{
 		namelen = sizeof(client); 
 		if( (ns = accept(s, (struct sockaddr *)&client, &namelen)) == -1)
 		{
 			fprintf(stderr, "Erro em accept()\n");
 			exit(6);
 		}
-					
+
 		bzero(buf, 1024);
 	
 		if( recv(ns, buf, sizeof(buf), 0) == -1 )
