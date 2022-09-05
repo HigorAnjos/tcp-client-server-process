@@ -21,6 +21,10 @@ char **argv;
 {
 	int s; 
 	char buf[1024]; 
+ /* argv[0] file name
+	* argv[1] IP host
+	* argv[2] PORT host
+	*/
 
 	isValidArguments(argc, argv);
 
@@ -66,6 +70,9 @@ int openAtcpNetworkConnection ()
 
 void initiateAconnectionOnAsocket (char ** argv, int s)
 {
+	// argv[1] IP host
+	// argv[2] PORT host
+	
 	unsigned short port ; /* numero porta servidor */
 	struct sockaddr_in server; /* end servidor */
 
