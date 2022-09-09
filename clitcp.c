@@ -21,10 +21,6 @@ char **argv;
 {
 	int s; 
 	char buf[1024]; 
- /* argv[0] file name
-	* argv[1] IP host
-	* argv[2] PORT host
-	*/
 
 	isValidArguments(argc, argv);
 
@@ -44,6 +40,10 @@ char **argv;
 
 void isValidArguments (int argc, char ** argv)
 {
+	/* argv[0] file name
+	* argv[1] IP host
+	* argv[2] PORT host
+	*/
 	if( argc != 3 )
 	{ 
 		fprintf( stderr, "Uso: %s hostname porta\n", argv[0] );
